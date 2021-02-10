@@ -27,11 +27,20 @@ namespace ConsoleUI
         private static void ProductTest()
         {
             ProductManager productManager = new ProductManager(new EfProductDal());
-            foreach (var product in productManager.GetProductDetails())
+            var result = productManager.GetProductDetails();
+            if (result.Success==true)
             {
-                Console.WriteLine("{0} / {1}" ,product.Productname, product.CategoryName);
+                foreach (var product in result.Data)
+                {
+                    Console.WriteLine("{0} / {1}", product.Productname, product.CategoryName);
+                }
+            }
+            else
+            {
+                Console.WriteLine(result.Message);
             }
         }
+            
 
 
     }
