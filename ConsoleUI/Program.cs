@@ -17,11 +17,24 @@ namespace ConsoleUI
 
         private static void CategoryTest()
         {
-            CategoryManager categoryManager = new CategoryManager(new EfCategoryDal());
-            foreach (var category in categoryManager.GetAll())
+         CategoryManager categoryManager = new CategoryManager(new EfCategoryDal());
+         var result = categoryManager.GetAll();
+            if (result.Success == true)
             {
-                Console.WriteLine(category.CategoryName);
+                foreach (var category in result.Data)
+                {
+                    Console.WriteLine("{0} / {1}", category.CategoryId, category.CategoryName );
+                }
+
+
+
             }
+            else
+            {
+                Console.WriteLine(result.Message);
+            }
+
+
         }
 
         private static void ProductTest()
@@ -30,15 +43,19 @@ namespace ConsoleUI
             var result = productManager.GetProductDetails();
             if (result.Success==true)
             {
-                foreach (var product in result.Data)
-                {
-                    Console.WriteLine("{0} / {1}", product.Productname, product.CategoryName);
-                }
+                    foreach (var product in result.Data)
+                    {
+                        Console.WriteLine("{0} / {1}", product.Productname, product.CategoryName);
+                    }
+
+            
+               
             }
             else
             {
                 Console.WriteLine(result.Message);
             }
+
         }
             
 
