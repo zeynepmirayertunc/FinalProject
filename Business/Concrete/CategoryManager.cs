@@ -28,9 +28,10 @@ namespace Business.Concrete
             // business codes        
         }
 
-        public Category GetById(int categoryId)
+        IDataResult<Category> ICategoryService.GetById(int categoryId)
         {
-            return _categoryDal.Get(c => c.CategoryId == categoryId);
+            return new SuccessDataResult<Category>(_categoryDal.Get(c => c.CategoryId == categoryId));
         }
-    }
+
+    }   
 }
