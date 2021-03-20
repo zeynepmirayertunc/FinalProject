@@ -30,10 +30,9 @@ namespace Business.Concrete
         {
             _productDal = productDal;
             _categoryService = categoryService;
-
-
         }
-        [SecuredOperation("product.add,admin")]
+
+        //[SecuredOperation("product.add,admin")]
         [ValidationAspect(typeof(ProductValidator))]
         [CacheRemoveAspect("IProductService.Get")]
         public IResult Add(Product product)
@@ -51,17 +50,33 @@ namespace Business.Concrete
             //business codes
         }
 
+        [TransactionScopeAspect]
+        public IResult AddTransactionalTest(Product product)
+        {
+            Add(product);
+            if (product.UnitPrice < 10)
+            {
+                throw new Exception("");
+            }
+            Add(product);
+            return null;
+        }
 
         [CacheAspect]
         public IDataResult<List<Product>> GetAll()
         {
-            if (DateTime.Now.Hour == 00)
+            if (DateTime.Now.Hour == 02)
             {
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
             }
 
             // bir iş sınıfı başka iş sınıflarını newlemez
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductsListed);
+        }
+
+        public IDataResult<List<Product>> GetAllByCategoryId(int categoryId)
+        {
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == categoryId));
         }
 
         [CacheAspect]
@@ -85,12 +100,6 @@ namespace Business.Concrete
             return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
         }
 
-        IDataResult<List<Product>> IProductService.GetAllByCategoryId(int id)
-        {
-            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));
-        }
-
-
         [ValidationAspect(typeof(ProductValidator))]
         [CacheRemoveAspect("IProductService.Get")]
         public IResult Update(Product product)
@@ -105,8 +114,6 @@ namespace Business.Concrete
 
             _productDal.Update(product);
             return new SuccessResult(Messages.ProductUpdated);
-
-
 
         }
 
@@ -141,20 +148,6 @@ namespace Business.Concrete
                 return new ErrorResult(Messages.CategoryCountofCategoryError);
             }
             return new SuccessResult();
-
-        }
-
-        [TransactionScopeAspect]
-        public IResult AddTransactionalTest(Product product)
-        {
-            Add(product);
-            if (product.UnitPrice <10)
-            {
-                throw new Exception("");
-            }
-            Add(product);
-            return null;
-            
 
         }
     }
